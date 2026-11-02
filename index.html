@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Surat Persetujuan – Syuting Mata Air</title>
+<title>Surat Persetujuan – Hak atas Potret</title>
 <style>
   :root { --bg:#f2f2f0; --ink:#111; --muted:#666; --line:#d4d4d0; --accent:#111; --err:#b3261e; }
   * { box-sizing: border-box; }
@@ -24,8 +24,10 @@
   .paper td { padding: 1px 12px 1px 0; vertical-align: top; }
   .paper td:first-child { white-space: nowrap; }
   .paper .val { font-weight:600; min-width: 8em; display:inline-block; border-bottom:1px dotted #999; }
-  .paper ol { padding-left: 22px; }
-  .paper li { margin-bottom: 6px; }
+  .paper .sec, .paper .it { position: relative; padding-left: 34px; }
+  .paper .sec { margin: 10px 0 4px; font-weight: 700; }
+  .paper .it { margin: 0 0 6px; }
+  .paper .n { position: absolute; left: 0; }
   .sign { margin-top: 20px; text-align:left; }
   .sign canvas { display:block; width:100%; max-width: 360px; height: 150px; border:1px dashed #888; border-radius:6px; background:#fcfcfc; touch-action:none; cursor: crosshair; }
   .sign .row { display:flex; gap:12px; align-items:center; margin-top:6px; font-size: 13px; color: var(--muted); }
@@ -41,12 +43,14 @@
 </head>
 <body>
 <main>
-  <h1>Surat Persetujuan Syuting “Mata Air”</h1>
+  <h1>Surat Persetujuan Hak atas Potret dan Penampilan</h1>
   <p class="sub">Isi data diri, baca surat pernyataan, tanda tangani, lalu kirim.</p>
 
   <form id="f" novalidate>
     <label for="name">Nama Lengkap</label>
     <input id="name" type="text" autocomplete="name" required>
+    <label for="nik">NIK</label>
+    <input id="nik" type="text" inputmode="numeric" maxlength="16" placeholder="16 digit" autocomplete="off" required>
     <label for="phone">Nomor WhatsApp</label>
     <input id="phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="+62 812 3456 7890" required>
     <label for="email">Alamat Surel</label>
@@ -58,22 +62,26 @@
       <p id="d-intro"></p>
       <table>
         <tr><td>Nama Lengkap</td><td>:</td><td><span class="val" id="v-name"></span></td></tr>
+        <tr><td>NIK</td><td>:</td><td><span class="val" id="v-nik"></span></td></tr>
         <tr><td>Nomor WhatsApp</td><td>:</td><td><span class="val" id="v-phone"></span></td></tr>
         <tr><td>Alamat Surel</td><td>:</td><td><span class="val" id="v-email"></span></td></tr>
       </table>
+      <p id="d-alias"></p>
       <p id="d-lead"></p>
-      <ol id="d-clauses"></ol>
+      <div id="d-sections"></div>
       <p id="d-closing"></p>
+      <p id="d-place"></p>
 
       <div class="sign">
-        <div>Tanda tangan:</div>
+        <div>Tanda tangan</div>
         <canvas id="pad" tabindex="0" aria-label="Kotak tanda tangan"></canvas>
-        <div class="row"><button type="button" class="link" id="clear">Hapus tanda tangan</button><span id="v-date"></span></div>
+        <div class="row"><button type="button" class="link" id="clear">Hapus tanda tangan</button></div>
+        <b id="v-sname"></b>
       </div>
       <div class="foot">+62 811-9693-1024 · booking@hindia1024.com · Equity Tower, 37th Floor, Jl. Jend. Sudirman, Kav. 52-53 (SCBD), South Jakarta, 12190</div>
     </section>
 
-    <label class="consent"><input type="checkbox" id="agree"><span id="d-agree"></span></label>
+    <label class="consent"><input type="checkbox" id="agree">Saya telah membaca dan menyetujui seluruh isi surat pernyataan di atas.</label>
     <button class="submit" id="go" type="submit">Kirim</button>
     <div class="msg" id="msg" role="alert"></div>
   </form>
@@ -94,37 +102,60 @@ document.querySelector(".logo").src = LOGO;
 
 // Single source for the document text: rendered below and sent to the server for the PDF copy.
 const DOC = {
-  title: "SURAT PERNYATAAN DAN PERSETUJUAN PELEPASAN HAK",
-  intro: "Surat Pernyataan dan Pelepasan Hak (“Pernyataan”) ini dibuat oleh dan antara yang bertandatangan di bawah ini:",
-  lead: "Dengan ini menyatakan hal-hal sebagai berikut:",
-  clauses: [
-    "bahwa saya menyatakan bersedia terlibat dalam proses syuting pembuatan video untuk lagu yang berjudul “Mata Air” milik musisi bernama “Hindia”, yang dalam hal ini diwakilkan oleh PT Sepuluh Dua Empat;",
-    "bahwa saya akan hadir sebagai pemeran pendukung (extras) dalam proses pengambilan gambar oleh tim produksi PT Sepuluh Dua Empat;",
-    "bahwa saya memberikan izin penuh, mutlak, dan tidak dapat ditarik kembali kepada PT Sepuluh Dua Empat untuk merekam gambar, merekam suara, menggunakan, mengedit, menayangkan, serta menggabungkan nama, wajah, penampilan, dan/atau rekaman video saya baik sebagian maupun seluruhnya;",
-    "bahwa saya menyadari dan menyetujui bahwa keterlibatan serta penggunaan penampilan ini bersifat sukarela dan tidak memberikan hak kepada saya untuk menerima royalti, honorarium, atau kompensasi finansial lainnya dari PT Sepuluh Dua Empat;",
-    "bahwa saya secara sadar melepaskan PT Sepuluh Dua Empat, Hindia, serta seluruh tim produksi dari segala bentuk klaim, tuntutan, atau gugatan hukum di masa mendatang yang berkaitan dengan penggunaan penampilan, gambar, suara, atau video saya dalam rangka publikasi video ini;",
-    "bahwa saya berjanji untuk menjaga kerahasiaan dan dilarang menyebarluaskan foto, rekaman video situasi syuting, kostum, jalan cerita, maupun konsep video \"Mata Air\" ke media sosial atau media publik mana pun sebelum video tersebut dirilis secara resmi oleh PT Sepuluh Dua Empat;",
-    "bahwa saya bertanggung jawab penuh atas segala konsekuensi hukum yang mungkin timbul akibat ketidakbenaran pernyataan ini;",
-    "bahwa saya menyatakan bahwa seluruh data yang saya isikan adalah benar dan saya telah berusia minimal 18 (delapan belas) tahun serta cakap bertindak secara hukum.",
-    "bahwa saya bertanggung jawab penuh atas segala akibat hukum yang timbul dari ketidakbenaran data atau pelanggaran atas pernyataan ini."
+  title: "SURAT PERNYATAAN DAN PERSETUJUAN HAK ATAS POTRET DAN PENAMPILAN",
+  // {hari} and {tanggal} are filled in: here from the viewer's clock (preview only), on the server for the PDF.
+  intro: "Surat Pernyataan dan Persetujuan Pelepasan Hak atas Potret dan Penampilan (“**Surat Pernyataan**”) ini dibuat dan ditandatangani pada hari {hari}, {tanggal}, oleh:",
+  alias: "(Selanjutnya disebut sebagai \"**Pembuat Pernyataan**\").",
+  lead: "Melalui Surat Pernyataan ini, Pembuat Pernyataan menyatakan secara sadar, tanpa paksaan, serta memberikan persetujuan yang tidak dapat ditarik kembali atas hal-hal, sebagai berikut:",
+  sections: [
+    { heading: "Keterlibatan dan Izin Penggunaan Potret", items: [
+      "Pembuat Pernyataan menyatakan keterlibatannya secara penuh dalam proses pembuatan film dan/atau video musik berjudul “Mata Air” milik Hindia (“Film dan/atau Music Video”).",
+      "Pembuat Pernyataan memberikan izin penuh dan mutlak kepada Hindia, dan seluruh tim produksi PT Aneka Cahaya Nusantara (“Palari Films”) yang ditunjuk untuk merekam, memotret, merekam suara, merekam adegan behind-the-scenes (BTS), serta mendokumentasikan wajah, nama, dan/atau penampilan Pembuat Pernyataan selama proses produksi Film dan/atau Music Video.",
+      "Penggunaan potret dan penampilan Pembuat Pernyataan berlaku di seluruh platform media (bioskop, televisi, YouTube, platform digital streaming, media sosial, dan media cetak/elektronik) di seluruh dunia (worldwide) tanpa batasan jangka waktu (perpetual).",
+      "Pembuat Pernyataan menyetujui bahwa imbalan, honorarium, atau bentuk kompensasi atas jasa pertunjukan atau pekerjaan produksi yang telah disepakati sebelumnya telah mencakup seluruh kompensasi atas pemberian izin penggunaan Hak Atas Potret (Right of Publicity) sebagaimana diatur dalam Surat Pernyataan ini."
+    ] },
+    { heading: "Kepemilikan Hak Cipta", items: [
+      "Pembuat Pernyataan mengakui dan menyetujui bahwa seluruh Hak Cipta, Hak Terkait dan Hak Kekayaan Intelektual atas master rekaman video, audio, dan hasil akhir Film dan/atau Music Video sepenuhnya merupakan hak milik Palari Films dan/atau Hindia.",
+      "Pembuat Pernyataan tidak memiliki hak apa pun untuk mengklaim kepemilikan atas Film dan/atau Music Video tersebut maupun menuntut royalti komersial atas penayangan, distribusi, dan eksploitasi karya audio-visual tersebut di kemudian hari."
+    ] },
+    { heading: "Kerahasiaan", items: [
+      "Pembuat Pernyataan wajib menjaga kerahasiaan seluruh materi syuting, rekaman adegan, lagu, konsep film, dan materi behind-the-scenes Film dan/atau Music Video.",
+      "Pembuat Pernyataan dilarang mempublikasikan atau menyebarluaskan foto, video, atau cuplikan (spoiler) proses produksi ke media sosial atau publik sebelum Film dan/atau Music Video tersebut dirilis secara resmi oleh Hindia atau Palari Films."
+    ] }
   ],
-  closing: "Saya telah membaca, memahami dan menyetujui seluruh syarat dan ketentuan di atas secara sadar dan tanpa paksaan dari pihak manapun untuk dapat dipergunakan sebagaimana mestinya."
+  closing: "Demikian Surat Pernyataan ini dibuat dengan sadar, tanpa paksaan dari pihak mana pun, serta mengikat secara hukum sejak tanggal ditandatangani untuk dipergunakan sebagaimana mestinya.",
+  place: "Jakarta, {tanggal}"
 };
 
 const $ = id => document.getElementById(id);
-const today = new Date().toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" });
+const now = new Date();
+const fill = s => s.replace("{hari}", now.toLocaleDateString("id-ID", { weekday: "long" }))
+                   .replace("{tanggal}", now.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" }));
+// "**x**" marks bold text.
+function rich(el, s) {
+  el.replaceChildren(...s.split("**").map((t, k) => { if (!(k % 2)) return t; const b = document.createElement("b"); b.textContent = t; return b; }));
+  return el;
+}
+function row(cls, num, s) {
+  const d = document.createElement("div"); d.className = cls;
+  const n = document.createElement("span"); n.className = "n"; n.textContent = num;
+  d.append(n, s); return d;
+}
 
 $("d-title").textContent = DOC.title;
-$("d-intro").textContent = DOC.intro;
+rich($("d-intro"), fill(DOC.intro));
+rich($("d-alias"), DOC.alias);
 $("d-lead").textContent = DOC.lead;
 $("d-closing").textContent = DOC.closing;
-$("d-agree").textContent = DOC.closing;
-$("v-date").textContent = today;
-DOC.clauses.forEach(c => { const li = document.createElement("li"); li.textContent = c; $("d-clauses").append(li); });
+$("d-place").textContent = fill(DOC.place);
+DOC.sections.forEach((sec, i) => {
+  $("d-sections").append(row("sec", (i + 1) + ".", sec.heading));
+  sec.items.forEach((it, j) => $("d-sections").append(row("it", (i + 1) + "." + (j + 1) + ".", it)));
+});
 
 // Live-fill the document from the inputs.
-for (const k of ["name", "phone", "email"]) {
-  $(k).addEventListener("input", () => { $("v-" + k).textContent = $(k).value; });
+for (const k of ["name", "nik", "phone", "email"]) {
+  $(k).addEventListener("input", () => { $("v-" + k).textContent = $(k).value; if (k === "name") $("v-sname").textContent = $(k).value; });
 }
 
 // Signature pad
@@ -160,9 +191,10 @@ fetch(ENDPOINT).then(r => r.json()).then(s => { if (s.open === false) showClosed
 $("f").addEventListener("submit", async e => {
   e.preventDefault();
   const msg = $("msg"), btn = $("go");
-  const name = $("name").value.trim(), phone = $("phone").value.trim(), email = $("email").value.trim();
+  const name = $("name").value.trim(), nik = $("nik").value.trim(), phone = $("phone").value.trim(), email = $("email").value.trim();
   msg.textContent = "";
   if (!name) return fail("Nama lengkap wajib diisi.", "name");
+  if (!/^\d{16}$/.test(nik)) return fail("NIK harus 16 digit angka.", "nik");
   if (!/^\+?[0-9\s\-()]{8,20}$/.test(phone)) return fail("Nomor WhatsApp tidak valid.", "phone");
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return fail("Alamat surel tidak valid.", "email");
   if (!signed) return fail("Silakan tanda tangan di kotak yang tersedia.", "pad");
@@ -171,7 +203,7 @@ $("f").addEventListener("submit", async e => {
   btn.disabled = true; btn.textContent = "Mengirim…";
   try {
     const res = await fetch(ENDPOINT, { method: "POST", body: JSON.stringify({
-      name, phone, email, doc: DOC, logo: LOGO, signature: pad.toDataURL("image/png")
+      name, nik, phone, email, doc: DOC, logo: LOGO, signature: pad.toDataURL("image/png")
     }) });
     const out = await res.json();
     if (out.closed) return showClosed();
