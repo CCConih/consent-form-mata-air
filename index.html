@@ -157,7 +157,9 @@ function showClosed() {
   $("f").hidden = true; $("done").hidden = true; $("closed").hidden = false; window.scrollTo(0, 0);
 }
 // Show the closed notice up front when the cap is already reached; the server re-checks on submit.
-fetch(ENDPOINT).then(r => r.json()).then(s => { if (s.open === false) showClosed(); }).catch(() => {});
+const CLOSED = true;   // submissions ended; set to false to reopen (the script's own cap still applies)
+if (CLOSED) showClosed();
+else fetch(ENDPOINT).then(r => r.json()).then(s => { if (s.open === false) showClosed(); }).catch(() => {});
 
 // Submit
 $("f").addEventListener("submit", async e => {
